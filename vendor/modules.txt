@@ -97,8 +97,8 @@ github.com/containers/ocicrypt/keywrap/pkcs7
 github.com/containers/ocicrypt/spec
 github.com/containers/ocicrypt/utils
 github.com/containers/ocicrypt/utils/keyprovider
-# github.com/coreos/go-oidc/v3 v3.14.1
-## explicit; go 1.23.0
+# github.com/coreos/go-oidc/v3 v3.16.0
+## explicit; go 1.24.0
 github.com/coreos/go-oidc/v3/oidc
 # github.com/coreos/go-systemd/v22 v22.6.0
 ## explicit; go 1.23
@@ -320,6 +320,8 @@ github.com/moby/sys/userns
 github.com/modern-go/concurrent
 # github.com/modern-go/reflect2 v1.0.2
 ## explicit; go 1.12
+# github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee
+## go 1.12
 github.com/modern-go/reflect2
 # github.com/onsi/ginkgo/v2 v2.27.2
 ## explicit; go 1.23.0
@@ -423,14 +425,20 @@ github.com/segmentio/ksuid
 # github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3
 ## explicit; go 1.13
 # github.com/sigstore/fulcio v1.7.1
-## explicit; go 1.24.0
+## explicit; go 1.24.6
+# github.com/sigstore/fulcio v1.8.1
+## explicit; go 1.24.6
 github.com/sigstore/fulcio/pkg/api
 github.com/sigstore/fulcio/pkg/certificate
 # github.com/sigstore/protobuf-specs v0.4.1
 ## explicit; go 1.22.0
+# github.com/sigstore/protobuf-specs v0.5.0
+## explicit; go 1.22.0
 github.com/sigstore/protobuf-specs/gen/pb-go/common/v1
 # github.com/sigstore/sigstore v1.9.5
-## explicit; go 1.23.0
+## explicit; go 1.24
+# github.com/sigstore/sigstore v1.9.6-0.20250729224751-181c5d3339b3
+## explicit; go 1.24
 github.com/sigstore/sigstore/pkg/cryptoutils
 github.com/sigstore/sigstore/pkg/oauth
 github.com/sigstore/sigstore/pkg/oauthflow
@@ -439,6 +447,8 @@ github.com/sigstore/sigstore/pkg/signature/options
 github.com/sigstore/sigstore/pkg/signature/payload
 # github.com/sirupsen/logrus v1.9.3
 ## explicit; go 1.13
+# github.com/sirupsen/logrus v1.9.4-0.20230606125235-dd1b4c2e81af
+## go 1.13
 github.com/sirupsen/logrus
 # github.com/skeema/knownhosts v1.3.2
 ## explicit; go 1.24.0
@@ -538,11 +548,13 @@ go.opentelemetry.io/otel/trace/embedded
 go.opentelemetry.io/otel/trace/internal/telemetry
 go.opentelemetry.io/otel/trace/noop
 # go.podman.io/image/v5 v5.38.0
-## explicit; go 1.24.0
+## explicit; go 1.24.6
 # go.podman.io/storage v1.61.0
 ## explicit; go 1.24.0
 # go.yaml.in/yaml/v2 v2.4.2
 ## explicit; go 1.15
+# go.yaml.in/yaml/v2 v2.4.3
+## go 1.15
 go.yaml.in/yaml/v2
 # go.yaml.in/yaml/v3 v3.0.4
 ## explicit; go 1.16
@@ -658,14 +670,20 @@ golang.org/x/tools/internal/typeparams
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
 # google.golang.org/genproto/googleapis/api v0.0.0-20250825161204-c5933d9347a5
-## explicit; go 1.23.0
+## explicit; go 1.24.0
+# google.golang.org/genproto/googleapis/api v0.0.0-20250929231259-57b25ae835d4
+## explicit; go 1.24.0
 google.golang.org/genproto/googleapis/api
 google.golang.org/genproto/googleapis/api/annotations
 # google.golang.org/genproto/googleapis/rpc v0.0.0-20250825161204-c5933d9347a5
-## explicit; go 1.23.0
+## explicit; go 1.24.0
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20251022142026-3a174f9686a8
+## explicit; go 1.24.0
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.75.0
-## explicit; go 1.23.0
+## explicit; go 1.24.0
+# google.golang.org/grpc v1.76.0
+## explicit; go 1.24.0
 google.golang.org/grpc
 google.golang.org/grpc/attributes
 google.golang.org/grpc/backoff
@@ -727,6 +745,8 @@ google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
 # google.golang.org/protobuf v1.36.9
+## explicit; go 1.23
+# google.golang.org/protobuf v1.36.10
 ## explicit; go 1.23
 google.golang.org/protobuf/encoding/protojson
 google.golang.org/protobuf/encoding/prototext
