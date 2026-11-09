@@ -4,11 +4,13 @@ package libimage
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"go.podman.io/common/pkg/config"
+	"go.podman.io/storage"
 )
 
 func TestRemoveImages(t *testing.T) {
@@ -51,7 +53,30 @@ func TestRemoveImages(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, exists)
 
-	rmReports, rmErrors = runtime.RemoveImages(ctx, []string{"foobar", "busybox"}, &RemoveImagesOptions{Ignore: true})
+	imageInUse := func(string) error {
+		return fmt.Errorf("container is running: %w", storage.ErrImageUsedByContainer)
+	}
+	for _, test := range []struct {
+		name       string
+		untagInUse bool
+	}{
+		{pulledImages[0].ID(), true},
+		{busyboxLatest, false},
+	} {
+		_, rmErrors = runtime.RemoveImages(ctx, []string{test.name}, &RemoveImagesOptions{Force: true, UntagInUse: test.untagInUse, RemoveContainerFunc: imageInUse})
+		require.Len(t, rmErrors, 1, "%v", test)
+		require.ErrorIs(t, rmErrors[0], storage.ErrImageUsedByContainer, "%v", test)
+	}
+	rmReports, rmErrors = runtime.RemoveImages(ctx, []string{busyboxLatest}, &RemoveImagesOptions{Force: true, UntagInUse: true, RemoveContainerFunc: imageInUse})
+	require.Nil(t, rmErrors)
+	require.Len(t, rmReports, 1)
+	require.False(t, rmReports[0].Removed)
+	require.Equal(t, []string{busyboxLatest}, rmReports[0].Untagged)
+	img, _, err := runtime.LookupImage(pulledImages[0].ID(), nil)
+	require.NoError(t, err)
+	require.Empty(t, img.Names())
+
+	rmReports, rmErrors = runtime.RemoveImages(ctx, []string{"foobar", pulledImages[0].ID()}, &RemoveImagesOptions{Ignore: true})
 	require.Nil(t, rmErrors)
 	require.Len(t, rmReports, 1)
 }
