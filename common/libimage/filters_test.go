@@ -272,6 +272,11 @@ func TestFilterManifest(t *testing.T) {
 		require.NoError(t, err, "%v", test)
 		require.Len(t, listedImages, test.matches, "%s -> %v", test.filters, listedImages)
 	}
+
+	for _, filter := range []string{"color=blue", "color!=blue"} {
+		_, err = runtime.ListImages(ctx, &ListImagesOptions{Filters: []string{filter}})
+		assert.ErrorIs(t, err, ErrUnknownFilter, filter)
+	}
 }
 
 func TestFilterAfterSinceBeforeUntil(t *testing.T) {
