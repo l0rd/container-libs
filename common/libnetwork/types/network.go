@@ -298,6 +298,10 @@ type PerNetworkOptions struct {
 	InterfaceName string `json:"interface_name"`
 	// Driver-specific options for this container.
 	Options map[string]string `json:"options,omitempty"`
+	// Links are Docker-style container links ("container:alias") for this
+	// network. They are stored as given and ignored by the network backend.
+	// Optional.
+	Links []string `json:"links,omitempty"`
 }
 
 // NetworkOptions for a given container.

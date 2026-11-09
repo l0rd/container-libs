@@ -253,6 +253,35 @@ var _ = Describe("run netavark", func() {
 		})
 	})
 
+	It("setup with links", func() {
+		runTest(func() {
+			defNet := types.DefaultNetworkName
+			intName := "eth0"
+			opts := types.SetupOptions{
+				NetworkOptions: types.NetworkOptions{
+					ContainerID:   "someID",
+					ContainerName: "someName",
+					Networks: []types.NamedPerNetworkOptions{{
+						Name: defNet,
+						PerNetworkOptions: types.PerNetworkOptions{
+							InterfaceName: intName,
+							Links:         []string{"other:alias"},
+						},
+					}},
+				},
+			}
+
+			res, err := libpodNet.Setup(netNSContainer.Path(), opts)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(res).To(HaveKey(defNet))
+			Expect(res[defNet].Interfaces).To(HaveKey(intName))
+			Expect(res[defNet].Interfaces[intName].Subnets).To(HaveLen(1))
+
+			err = libpodNet.Teardown(netNSContainer.Path(), types.TeardownOptions(opts))
+			Expect(err).ToNot(HaveOccurred())
+		})
+	})
+
 	It("setup two containers", func() {
 		runTest(func() {
 			defNet := types.DefaultNetworkName
