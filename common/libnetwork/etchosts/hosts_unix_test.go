@@ -92,6 +92,7 @@ func TestNew(t *testing.T) {
 		extraHosts                []string
 		containerIPs              HostEntries
 		hostContainersInternal    string
+		noHostContainersInternal  bool
 		expectedTargetFileContent string
 		wantErrString             string
 	}{
@@ -228,6 +229,21 @@ func TestNew(t *testing.T) {
 			expectedTargetFileContent: "10.0.0.1\tgatewayname\n" + targetFileContent1 + "10.0.0.1\thost.containers.internal host.docker.internal\n",
 		},
 		{
+			name:                      "host.containers.internal entry disabled",
+			baseFileContent:           baseFileContent1Spaces,
+			hostContainersInternal:    "10.0.0.1",
+			noHostContainersInternal:  true,
+			expectedTargetFileContent: targetFileContent1,
+		},
+		{
+			name:                      "host.containers.internal entry disabled with host-gateway",
+			baseFileContent:           baseFileContent1Spaces,
+			extraHosts:                []string{"gatewayname:host-gateway"},
+			hostContainersInternal:    "10.0.0.1",
+			noHostContainersInternal:  true,
+			expectedTargetFileContent: "10.0.0.1\tgatewayname\n" + targetFileContent1,
+		},
+		{
 			name:                      "host.containers.internal not added when already present in extra hosts",
 			baseFileContent:           baseFileContent1Spaces,
 			extraHosts:                []string{"host.containers.internal:1.1.1.1"},
@@ -303,11 +319,12 @@ func TestNew(t *testing.T) {
 			targetFile := filepath.Join(t.TempDir(), "target")
 
 			params := &Params{
-				BaseFile:                 baseHostFile,
-				ExtraHosts:               tt.extraHosts,
-				ContainerIPs:             tt.containerIPs,
-				HostContainersInternalIP: tt.hostContainersInternal,
-				TargetFile:               targetFile,
+				BaseFile:                      baseHostFile,
+				ExtraHosts:                    tt.extraHosts,
+				ContainerIPs:                  tt.containerIPs,
+				HostContainersInternalIP:      tt.hostContainersInternal,
+				NoHostContainersInternalEntry: tt.noHostContainersInternal,
+				TargetFile:                    targetFile,
 			}
 
 			err := New(params)

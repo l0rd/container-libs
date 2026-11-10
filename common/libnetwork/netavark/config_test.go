@@ -1018,6 +1018,26 @@ var _ = Describe("Config", func() {
 			Expect(err.Error()).To(ContainSubstring("unsupported bridge network option"))
 		})
 
+		It("network create with opaque options", func() {
+			network := types.Network{OpaqueOptions: map[string]string{
+				"someopt":                       "value",
+				"com.docker.network.driver.mtu": "1450",
+			}}
+			network1, err := libpodNet.NetworkCreate(network, nil)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(network1.Options).To(BeEmpty())
+			Expect(network1.OpaqueOptions).To(Equal(network.OpaqueOptions))
+			path := filepath.Join(networkConfDir, network1.Name+".json")
+			grepInFile(path, `"someopt": "value"`)
+
+			// create a new interface to force a config load from disk
+			libpodNet, err = getNetworkInterface(networkConfDir)
+			Expect(err).ToNot(HaveOccurred())
+			network2, err := libpodNet.NetworkInspect(network1.Name)
+			Expect(err).ToNot(HaveOccurred())
+			EqualNetwork(network2, network1)
+		})
+
 		It("network create unsupported driver", func() {
 			network := types.Network{
 				Driver: "someDriver",
