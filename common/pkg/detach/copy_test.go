@@ -2,6 +2,7 @@ package detach
 
 import (
 	"bytes"
+	"errors"
 	"strings"
 	"testing"
 
@@ -129,4 +130,66 @@ func FuzzCopy(f *testing.F) {
 			})
 		}
 	})
+}
+
+var errUnexpectedRead = errors.New("unexpected read")
+
+// chunkReader returns one chunk per Read, then fails. On a terminal a read
+// past the input blocks until the user types again.
+type chunkReader struct {
+	chunks [][]byte
+	reads  int
+}
+
+func (c *chunkReader) Read(p []byte) (int, error) {
+	c.reads++
+	if len(c.chunks) == 0 {
+		return 0, errUnexpectedRead
+	}
+	n := copy(p, c.chunks[0])
+	c.chunks = c.chunks[1:]
+	return n, nil
+}
+
+func TestCopyDetachWithoutFurtherInput(t *testing.T) {
+	keys := []byte{'A', 'B'}
+	tests := []struct {
+		name     string
+		chunks   [][]byte
+		expected []byte
+	}{
+		{
+			name:   "sequence alone in one read",
+			chunks: [][]byte{{'A', 'B'}},
+		},
+		{
+			name:     "sequence at the end of a read",
+			chunks:   [][]byte{{'x', 'y', 'A', 'B'}},
+			expected: []byte{'x', 'y'},
+		},
+		{
+			name:     "sequence split across reads",
+			chunks:   [][]byte{{'x', 'A'}, {'B'}},
+			expected: []byte{'x'},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dst := &bytes.Buffer{}
+			src := &chunkReader{chunks: tt.chunks}
+			written, err := Copy(dst, src, keys)
+			assert.ErrorIs(t, err, ErrDetach)
+			assert.Equal(t, len(tt.chunks), src.reads, "Copy must detach without reading past the sequence")
+			assert.Equal(t, int64(len(tt.expected)), written)
+			assert.Equal(t, string(tt.expected), dst.String())
+		})
+	}
+}
+
+func TestCopyReturnsReadError(t *testing.T) {
+	dst := &bytes.Buffer{}
+	written, err := Copy(dst, &chunkReader{chunks: [][]byte{{'x'}}}, []byte{'A', 'B'})
+	assert.ErrorIs(t, err, errUnexpectedRead)
+	assert.Equal(t, int64(1), written)
+	assert.Equal(t, "x", dst.String())
 }

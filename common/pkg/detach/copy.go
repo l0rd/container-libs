@@ -52,13 +52,14 @@ outer:
 			if er == io.EOF {
 				return written, nil
 			}
-			return written, err
+			return written, er
 		}
 
 		// Check buffer from 0 to end - sequence length (after that there cannot be a full match),
 		// then walk the entire buffer and try to perform a full sequence match.
+		// A full match can start at readMinusKeys itself, when the sequence ends the read.
 		readMinusKeys := nr - len(keys)
-		for i := range readMinusKeys {
+		for i := range readMinusKeys + 1 {
 			if bytes.Equal(buf[i:i+len(keys)], keys) {
 				if i > 0 {
 					nw, ew := dst.Write(buf[:i])
@@ -74,7 +75,7 @@ outer:
 		// Now read the rest of the buffer to the end and perform a partial match on the sequence.
 		// Note that readMinusKeys can be < 0 on reads smaller than sequence length. Thus we must
 		// ensure it is at least 0 otherwise the index access will cause a panic.
-		for i := max(readMinusKeys, 0); i < nr; i++ {
+		for i := max(readMinusKeys+1, 0); i < nr; i++ {
 			if bytes.Equal(buf[i:nr], keys[:nr-i]) {
 				nw, ew := dst.Write(buf[:i])
 				if ew != nil {
